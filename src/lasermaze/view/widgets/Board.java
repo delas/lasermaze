@@ -48,7 +48,6 @@ public class Board extends JPanel {
             for (int i = 0; i < cols; i++) {
                 if (board[j][i] != null) {
                     add(board[j][i]);
-                    continue;
                 } else {
                     Tile t = new Tile(TyleType.EMPTY);
                     board[j][i] = t;
@@ -62,21 +61,17 @@ public class Board extends JPanel {
         new Thread() {
             @Override
             public void run() {
-                for (int col = laserCol + 1; col < cols; col++) {
-                    board[laserRow][col].setLaserBeam(true);
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) { }
-                }
                 try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) { }
-                for (int col = laserCol + 1; col < cols; col++) {
-                    board[laserRow][col].setLaserBeam(false);
-                    try {
+                    for (int col = laserCol + 1; col < cols; col++) {
+                        board[laserRow][col].setLaserBeam(true);
                         Thread.sleep(100);
-                    } catch (InterruptedException e) { }
-                }
+                    }
+                    Thread.sleep(1000);
+                    for (int col = laserCol + 1; col < cols; col++) {
+                        board[laserRow][col].setLaserBeam(false);
+                        Thread.sleep(100);
+                    }
+                } catch (InterruptedException e) { }
             }
         }.start();
     }
