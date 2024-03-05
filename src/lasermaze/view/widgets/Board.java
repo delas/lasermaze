@@ -13,12 +13,15 @@ public class Board extends JPanel {
     private int rows;
     private int cols;
 
+    private int laserRow;
+    private int laserCol;
+
     public Board(int rows, int cols) {
         this.board = new Tile[rows][cols];
         this.rows = rows;
         this.cols = cols;
 
-        setLayout(new GridLayout(rows, cols, 4, 4));
+        setLayout(new GridLayout(rows, cols));
         setBackground(Color.WHITE);
 
         setBorder(
@@ -35,7 +38,9 @@ public class Board extends JPanel {
 
     private void loadBoard() {
         // laser start
-        board[rnd.nextInt(rows - 1)][0] = new Tile(TyleType.LASER);
+        laserCol = 0;
+        laserRow = rnd.nextInt(rows - 1);
+        board[laserRow][laserCol] = new Tile(TyleType.LASER);
         // target
         board[rnd.nextInt(rows - 1)][1 + rnd.nextInt(cols - 1)] = new Tile(TyleType.MIRROR);
         // add the rest
@@ -51,5 +56,28 @@ public class Board extends JPanel {
                 }
             }
         }
+    }
+
+    public void shootLaser() {
+        new Thread() {
+            @Override
+            public void run() {
+                for (int col = laserCol + 1; col < cols; col++) {
+                    board[laserRow][col].setLaserBeam(true);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) { }
+                }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) { }
+                for (int col = laserCol + 1; col < cols; col++) {
+                    board[laserRow][col].setLaserBeam(false);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) { }
+                }
+            }
+        }.start();
     }
 }
